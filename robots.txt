@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# 開発者ハブ — 全ページクロール許可
+# 本体サイト: https://simplememofast.com/
+
+Sitemap: https://simplememofast.github.io/sitemap.xml

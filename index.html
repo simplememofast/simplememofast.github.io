@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Captio式シンプルメモ — Developer Hub | simplememofast</title>
+<meta name="description" content="iOS向け軽量メモアプリ「Captio式シンプルメモ」の開発者ハブ。アーキテクチャ解説、Captio移行ガイド、変更履歴、プレスキット、技術スタック (Swift / UIKit / Cloudflare Workers) を公開しています。">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<link rel="canonical" href="https://simplememofast.github.io/">
+<link rel="alternate" hreflang="ja" href="https://simplememofast.github.io/">
+<link rel="alternate" hreflang="x-default" href="https://simplememofast.github.io/">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="Captio式シンプルメモ — Developer Hub">
+<meta property="og:description" content="iOS向け軽量メモアプリ「Captio式シンプルメモ」の開発者ハブ。アーキテクチャ、移行ガイド、変更履歴、プレスキットを公開。">
+<meta property="og:url" content="https://simplememofast.github.io/">
+<meta property="og:site_name" content="simplememofast — Developer Hub">
+<meta property="og:image" content="https://simplememofast.com/assets/img/og/index.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@simplememofast">
+
+<link rel="stylesheet" href="/assets/css/style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Captio式シンプルメモ",
+  "alternateName": ["Simple Memo Fast", "軽快シンプルメモ"],
+  "applicationCategory": "ProductivityApplication",
+  "operatingSystem": "iOS 16+",
+  "url": "https://simplememofast.com/",
+  "sameAs": [
+    "https://github.com/simplememofast",
+    "https://x.com/simplememofast",
+    "https://note.com/simplememo",
+    "https://zenn.dev/simplememo",
+    "https://www.producthunt.com/products/simplememo",
+    "https://alternativeto.net/software/simplememo/"
+  ],
+  "downloadUrl": "https://apps.apple.com/jp/app/id6758438948",
+  "offers": [
+    { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "JPY" },
+    { "@type": "Offer", "name": "Premium 月額", "price": "500", "priceCurrency": "JPY" },
+    { "@type": "Offer", "name": "Premium 年額", "price": "5000", "priceCurrency": "JPY" }
+  ],
+  "publisher": {
+    "@type": "Organization",
+    "name": "株式会社ユリカ",
+    "alternateName": "Yurika, K.K.",
+    "url": "https://simplememofast.com/about/"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "simplememofast — Developer Hub",
+  "url": "https://simplememofast.github.io/",
+  "publisher": {
+    "@type": "Organization",
+    "name": "株式会社ユリカ",
+    "url": "https://simplememofast.com/about/"
+  }
+}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a href="/" class="brand">simplememofast / dev</a>
+    <nav>
+      <a href="/" aria-current="page">Home</a>
+      <a href="/about.html">About</a>
+      <a href="/features.html">Features</a>
+      <a href="/captio-migration.html">Captio移行</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="/press.html">Press</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article>
+    <header class="page-header">
+      <h1>Captio式シンプルメモ — Developer Hub</h1>
+      <p class="lead">
+        iOS向け軽量メモアプリ「Captio式シンプルメモ」の開発者向け情報ハブ。
+        アーキテクチャ、Captio 移行ガイド、変更履歴、プレスキットを公開しています。
+        プロダクト本体は <a href="https://simplememofast.com/">simplememofast.com</a> をご覧ください。
+      </p>
+    </header>
+
+    <p>
+      <a class="btn" href="https://simplememofast.com/">公式サイトを開く</a>
+      <a class="btn secondary" href="https://apps.apple.com/jp/app/id6758438948">App Store</a>
+      <a class="btn secondary" href="https://github.com/simplememofast">GitHub Org</a>
+    </p>
+
+    <h2>このサイトについて</h2>
+    <p>
+      <strong>simplememofast.github.io</strong> は、
+      <a href="https://simplememofast.com/">Captio式シンプルメモ</a> の開発・運用に関する技術情報、
+      旧 <a href="https://simplememofast.com/captio-alternative/">Captio からの移行ガイド</a>、
+      バージョン履歴、プレスキットなどをまとめた開発者ハブです。
+      製品の使い方・料金・FAQ といったプロダクト情報は本体サイト
+      <a href="https://simplememofast.com/">simplememofast.com</a> に集約しています。
+    </p>
+
+    <h2>プロダクト概要</h2>
+    <p>
+      <strong>「書く、送る、メールに届く。」</strong> ——
+      思いついた瞬間にメモして、ワンタップで自分のメールへ送る iOS アプリです。
+      2024年10月にサービス終了した <a href="https://simplememofast.com/blog/captio-discontinued">Captio の後継</a> として2026年2月にリリースされました。
+      フォルダ整理もタグ付けも不要。受信箱がそのまま「見逃さないメモ置き場」になります。
+    </p>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-num">0.3s</div>
+        <div class="stat-label">アプリ起動</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">150ms</div>
+        <div class="stat-label">送信レイテンシ</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">AES-GCM</div>
+        <div class="stat-label">端末内暗号化</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">Offline</div>
+        <div class="stat-label">Outbox 再送</div>
+      </div>
+    </div>
+
+    <h2>主要トピック</h2>
+
+    <h3>1. <a href="/features.html">Features — 技術仕様と機能設計</a></h3>
+    <p>
+      Outbox アーキテクチャ、AES-GCM 端末内暗号化、Cloudflare Workers エッジ送信基盤、
+      iOS 起動最適化など、本アプリを支える技術の解説。
+      機能の利用方法は <a href="https://simplememofast.com/guides/">公式設定ガイド</a> を参照してください。
+    </p>
+
+    <h3>2. <a href="/captio-migration.html">Captio 移行ガイド</a></h3>
+    <p>
+      旧 Captio ユーザー向けの移行手順、UI 対応表、Apple Shortcuts レシピをまとめています。
+      よりエンドユーザー向けの説明は
+      <a href="https://simplememofast.com/captio-alternative/">「Captio代替」公式ページ</a> に詳述があります。
+      関連リポジトリ:
+      <a href="https://github.com/simplememofast/captio-migration-guide">captio-migration-guide</a>
+    </p>
+
+    <h3>3. <a href="/changelog.html">Changelog</a></h3>
+    <p>
+      アプリの主要リリース履歴。デイリーな開発トピックは公式の
+      <a href="https://simplememofast.com/devlog/">開発日誌</a> で公開しています。
+    </p>
+
+    <h3>4. <a href="/press.html">Press Kit</a></h3>
+    <p>
+      メディア・ブロガー・レビュアー向けの素材集。ロゴ、スクリーンショット、boilerplate、
+      連絡先。掲載時の表記ゆれを防ぐためのファクトシートも含みます。
+    </p>
+
+    <h3>5. <a href="/about.html">About — 開発元・連絡先</a></h3>
+    <p>
+      運営会社 <strong>株式会社ユリカ</strong>（Yurika, K.K.）、開発者プロフィール、
+      関連 SNS / コミュニティアカウントの一覧。
+    </p>
+
+    <h2>外部の関連プロパティ</h2>
+    <ul>
+      <li><strong>公式サイト</strong>: <a href="https://simplememofast.com/">simplememofast.com</a></li>
+      <li><strong>App Store</strong>: <a href="https://apps.apple.com/jp/app/id6758438948">id6758438948</a></li>
+      <li><strong>GitHub</strong>: <a href="https://github.com/simplememofast">@simplememofast</a></li>
+      <li><strong>X / Twitter</strong>: <a href="https://x.com/simplememofast">@simplememofast</a></li>
+      <li><strong>note</strong>: <a href="https://note.com/simplememo">note.com/simplememo</a></li>
+      <li><strong>Zenn</strong>: <a href="https://zenn.dev/simplememo">zenn.dev/simplememo</a></li>
+      <li><strong>Product Hunt</strong>: <a href="https://www.producthunt.com/products/simplememo">producthunt.com/products/simplememo</a></li>
+      <li><strong>AlternativeTo</strong>: <a href="https://alternativeto.net/software/simplememo/">alternativeto.net/software/simplememo</a></li>
+    </ul>
+
+    <div class="callout">
+      <div class="callout-title">For Developers</div>
+      <p>
+        このハブは静的サイト（GitHub Pages）として運用されています。
+        オープンな技術情報を集約し、開発の透明性とプロダクトへの信頼性向上を目的としています。
+        誤りの指摘や追記提案は GitHub の Issue / PR で歓迎します。
+      </p>
+    </div>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <div class="links">
+      <a href="https://simplememofast.com/">公式サイト</a>
+      <a href="https://simplememofast.com/about/">運営</a>
+      <a href="https://simplememofast.com/privacy">プライバシー</a>
+      <a href="https://simplememofast.com/terms">利用規約</a>
+      <a href="https://github.com/simplememofast">GitHub</a>
+    </div>
+    <div class="copy">
+      © 2026 株式会社ユリカ (Yurika, K.K.) / Captio式シンプルメモ ·
+      simplememofast.github.io は本体サイト
+      <a href="https://simplememofast.com/">simplememofast.com</a> の開発者向け情報ハブです。
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

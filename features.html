@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Features — 技術仕様と設計 | simplememofast Developer Hub</title>
+<meta name="description" content="Captio式シンプルメモの技術仕様。Outbox アーキテクチャ、AES-GCM 端末内暗号化、Cloudflare Workers エッジ送信、iOS 起動最適化、メール送信プロトコルなどを開発者向けに解説。">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://simplememofast.github.io/features.html">
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="Features — 技術仕様と設計 | simplememofast Developer Hub">
+<meta property="og:description" content="Outbox / AES-GCM / Cloudflare Workers / iOS 起動最適化など、Captio式シンプルメモの技術仕様。">
+<meta property="og:url" content="https://simplememofast.github.io/features.html">
+
+<link rel="stylesheet" href="/assets/css/style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Captio式シンプルメモ 技術仕様",
+  "description": "Outbox / AES-GCM / Cloudflare Workers / iOS 起動最適化など、本アプリの設計と実装に関する技術解説。",
+  "author": {
+    "@type": "Organization",
+    "name": "株式会社ユリカ",
+    "url": "https://simplememofast.com/about/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "株式会社ユリカ",
+    "url": "https://simplememofast.com/about/"
+  },
+  "mainEntityOfPage": "https://simplememofast.github.io/features.html"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://simplememofast.github.io/" },
+    { "@type": "ListItem", "position": 2, "name": "Features", "item": "https://simplememofast.github.io/features.html" }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a href="/" class="brand">simplememofast / dev</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about.html">About</a>
+      <a href="/features.html" aria-current="page">Features</a>
+      <a href="/captio-migration.html">Captio移行</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="/press.html">Press</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article>
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a href="/">Home</a> › Features
+    </nav>
+
+    <header class="page-header">
+      <h1>Features — 技術仕様と設計</h1>
+      <p class="lead">
+        Captio式シンプルメモの中核を支える技術コンポーネントを、開発者向けに解説します。
+        エンドユーザー向けの機能紹介は <a href="https://simplememofast.com/">公式サイト</a> をご覧ください。
+      </p>
+    </header>
+
+    <h2>性能ターゲット</h2>
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-num">0.3s</div>
+        <div class="stat-label">cold launch</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">150ms</div>
+        <div class="stat-label">send latency (p50)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">~6MB</div>
+        <div class="stat-label">app binary</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">iOS 16+</div>
+        <div class="stat-label">deployment target</div>
+      </div>
+    </div>
+    <p>
+      これらは <strong>「思考の速度を落とさない」</strong> という設計目標から逆算した数値です。
+      数値の意味と測定方法は <a href="https://simplememofast.com/blog/fastest-memo-app-benchmark">最速メモアプリベンチマーク記事</a> で詳述しています。
+    </p>
+
+    <h2>1. ワンタップ送信 (One-tap dispatch)</h2>
+    <p>
+      アプリ起動からメモ入力フィールドに focus が当たるまでを <code>application(_:didFinishLaunchingWithOptions:)</code> 内の同期処理として最短経路で実装。
+      バックグラウンド初期化が必要な依存（暗号鍵ロード、Outbox 復元など）はメインフロー外で遅延実行し、入力 UI を最優先で出します。
+      送信ボタンは textfield と同レイヤに配置し、入力中もタップ可能。
+    </p>
+    <p>
+      実際の使い方は <a href="https://simplememofast.com/guides/">設定ガイド</a> と
+      <a href="https://simplememofast.com/use-cases/">活用事例</a> を参照してください。
+    </p>
+
+    <h2>2. Outbox アーキテクチャ (オフライン対応)</h2>
+    <p>
+      送信時に毎回ネットワークを試行するのではなく、まず <strong>Outbox（未送信キュー）</strong> に Enqueue → Reachability の変化と
+      <code>BGAppRefreshTask</code> をトリガに自動再送する設計です。
+      これにより、地下鉄・飛行機内・電波の弱い場所でも「送ったつもりが消えている」を構造的に防ぎます。
+    </p>
+    <pre><code>// pseudo-flow
+1. user taps Send
+2. encrypt(plaintext) -> ciphertext
+3. outbox.enqueue(ciphertext)
+4. trigger flush() immediately
+5. on network change / BG refresh -> flush()
+6. on 2xx response from edge worker -> mark as sent
+7. on 4xx (permanent) -> surface to history with error state
+8. on 5xx / network err -> exponential backoff, keep in queue</code></pre>
+    <p>
+      Outbox の状態は <a href="https://simplememofast.com/faq">FAQ「オフライン時のメモはどう扱われますか？」</a> でユーザー向けに説明しています。
+    </p>
+
+    <h2>3. 端末内 AES-GCM 暗号化</h2>
+    <p>
+      Outbox に積まれたメモ本文と送信履歴は、すべて <strong>AES-GCM (256-bit)</strong> で暗号化して保存します。
+      鍵は端末の Secure Enclave に紐付いた Keychain に保管し、アプリ自身であってもメモリ上の必要時間外は鍵を保持しません。
+    </p>
+    <ul>
+      <li>暗号方式: AES-GCM (256-bit), nonce はメモごとにランダム生成 (96-bit)</li>
+      <li>鍵保管: iOS Keychain（<code>kSecAttrAccessibleWhenUnlockedThisDeviceOnly</code>）</li>
+      <li>iCloud / 他端末への鍵同期: なし（端末ローカル限定）</li>
+      <li>復号タイミング: 履歴閲覧時 / 送信直前のみ</li>
+    </ul>
+    <p>
+      プライバシー方針の全体像は <a href="https://simplememofast.com/privacy">プライバシーポリシー</a> に明文化しています。
+    </p>
+
+    <h2>4. Cloudflare Workers エッジ送信基盤</h2>
+    <p>
+      送信先のメールサーバーに直接 SMTP を張るのではなく、Cloudflare Workers 上の薄い中継 Worker を経由します。
+      これにより:
+    </p>
+    <ul>
+      <li>世界中のエッジから 150ms 前後で受理応答を返せる</li>
+      <li>メール本文は Worker 内で受け取って即時上流に送り、ログに本文を保存しない設計に統一できる</li>
+      <li>レート制御・スパム保護・送信元 IP の信頼性管理を 1 箇所に集約できる</li>
+    </ul>
+    <p>
+      Worker 側は本文の恒常保存を行わず、運用上必要な期間（再送・障害解析用）のみメタデータを保持します。
+      詳細な扱いは <a href="https://simplememofast.com/privacy">プライバシーポリシー</a> をご参照ください。
+    </p>
+
+    <h2>5. メソッドとの相性</h2>
+    <p>
+      本アプリは GTD の Inbox、Building a Second Brain の Capture、Inbox Zero の inbox 集約フェーズと相性が良い設計です。
+      具体的な運用パターンは <a href="https://simplememofast.com/methods/">生産性メソッド解説</a> にまとめています。
+    </p>
+
+    <h2>非機能 / スコープ外</h2>
+    <table>
+      <thead>
+        <tr><th>項目</th><th>状態</th><th>理由</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>画像添付</td><td>非対応</td><td>テキスト最速 capture に専念するため</td></tr>
+        <tr><td>同期 (端末間)</td><td>非対応</td><td>受信箱がそのまま同期先となる設計</td></tr>
+        <tr><td>タグ / フォルダ</td><td>非対応</td><td>メール側の検索・ラベルに委譲</td></tr>
+        <tr><td>Android 版</td><td>未提供</td><td>iOS の起動・送信特性に最適化中</td></tr>
+        <tr><td>本文サーバー保存</td><td>行わない</td><td>プライバシー設計上の原則</td></tr>
+      </tbody>
+    </table>
+
+    <h2>関連ドキュメント</h2>
+    <ul>
+      <li><a href="https://simplememofast.com/note-to-email/">メモ→メールの仕組み（公式）</a></li>
+      <li><a href="https://simplememofast.com/guides/">Gmail / Outlook / iCloud 設定ガイド</a></li>
+      <li><a href="https://simplememofast.com/vs/">他メモアプリとの比較</a></li>
+      <li><a href="https://simplememofast.com/glossary/">用語集</a></li>
+      <li><a href="https://simplememofast.com/blog/email-yourself-memo">自分へのメールをもっと速く</a></li>
+    </ul>
+
+    <div class="callout">
+      <div class="callout-title">Feedback</div>
+      <p>
+        技術解説の誤り・追記提案は <a href="https://github.com/simplememofast">GitHub Org</a> の Issue で受け付けています。
+        プロダクトに関するご意見は <a href="https://simplememofast.com/contact">公式お問い合わせ</a> へ。
+      </p>
+    </div>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <div class="links">
+      <a href="https://simplememofast.com/">公式サイト</a>
+      <a href="https://simplememofast.com/about/">運営</a>
+      <a href="https://simplememofast.com/privacy">プライバシー</a>
+      <a href="https://simplememofast.com/terms">利用規約</a>
+      <a href="https://github.com/simplememofast">GitHub</a>
+    </div>
+    <div class="copy">© 2026 株式会社ユリカ (Yurika, K.K.) / Captio式シンプルメモ</div>
+  </div>
+</footer>
+
+</body>
+</html>

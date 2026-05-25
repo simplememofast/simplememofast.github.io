@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Captio 移行ガイド — 2024年終了後の代替手段 | simplememofast Developer Hub</title>
+<meta name="description" content="2024年10月に終了した iPhone アプリ Captio の代替・移行ガイド。Apple Shortcuts を使った暫定運用、Captio式シンプルメモへの移行手順、機能対応表、FAQ。">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://simplememofast.github.io/captio-migration.html">
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="Captio 移行ガイド — 2024年終了後の代替手段">
+<meta property="og:description" content="Captio 終了後に「メモ→自分宛メール」ワークフローを継続するための移行ガイド。比較表・Shortcuts レシピ・FAQ。">
+<meta property="og:url" content="https://simplememofast.github.io/captio-migration.html">
+
+<link rel="stylesheet" href="/assets/css/style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Captio から Captio式シンプルメモへの移行",
+  "description": "2024年10月に終了した Captio の代替として、Captio式シンプルメモへ「メモ→自分宛メール」ワークフローを移行する手順。",
+  "step": [
+    { "@type": "HowToStep", "name": "App Store からインストール", "url": "https://apps.apple.com/jp/app/id6758438948" },
+    { "@type": "HowToStep", "name": "送信先メールアドレスを設定", "url": "https://simplememofast.com/guides/" },
+    { "@type": "HowToStep", "name": "署名・件名プレフィックスをカスタマイズ", "url": "https://simplememofast.com/guides/" },
+    { "@type": "HowToStep", "name": "Shortcuts / ホーム画面からの起動を確認", "url": "https://simplememofast.com/guides/" }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Captio はなぜ終了したのですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "オリジナルの Captio は 2024 年 10 月にサービス提供を終了しました。背景は公式の解説記事を参照してください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Captio で使っていた送信先アドレスはそのまま使えますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "はい。送信先メールアドレスは自分の任意のアドレスを設定できるため、Captio で使っていた宛先をそのまま登録できます。受信箱に蓄積した過去メモを失うこともありません。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Captio との UI 差分はどのくらいありますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "起動→入力→送信の3操作はほぼ同一です。Captio式シンプルメモではオフライン Outbox と送信履歴が標準搭載されている点が大きな差分です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "iCloud Mail でも使えますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Gmail / Outlook / iCloud Mail いずれにも送信できます。設定方法はメールサービスごとに公式ガイドで案内しています。"
+      }
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://simplememofast.github.io/" },
+    { "@type": "ListItem", "position": 2, "name": "Captio Migration", "item": "https://simplememofast.github.io/captio-migration.html" }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a href="/" class="brand">simplememofast / dev</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about.html">About</a>
+      <a href="/features.html">Features</a>
+      <a href="/captio-migration.html" aria-current="page">Captio移行</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="/press.html">Press</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article>
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a href="/">Home</a> › Captio Migration
+    </nav>
+
+    <header class="page-header">
+      <h1>Captio 移行ガイド</h1>
+      <p class="lead">
+        2024年10月にサービス終了した iPhone アプリ <strong>Captio</strong> の代替として、
+        「メモ→自分宛メール」というワークフローを継続したいユーザーのためのガイドです。
+        ユーザー向けの簡潔な解説は <a href="https://simplememofast.com/captio-alternative/">公式の「Captio代替」ページ</a> に、
+        Apple Shortcuts を使った暫定運用は <a href="https://github.com/simplememofast/captio-migration-guide">GitHub の captio-migration-guide リポジトリ</a> にあります。
+      </p>
+    </header>
+
+    <h2>背景：Captio とは何だったか</h2>
+    <p>
+      Captio は「起動→1行書く→送信ボタンで自分宛メール」だけを行う、極端にミニマルな iPhone アプリでした。
+      フォルダもタグも同期もありません。メモは <strong>自分のメール受信箱に流れていくだけ</strong>。
+      この「メモを管理する場所を持たない」設計が、GTD の Inbox や Building a Second Brain の Capture フェーズと相性がよく、
+      長年エンジニア・ライター・学生に愛用されてきました。
+    </p>
+    <p>
+      終了の経緯と背景は <a href="https://simplememofast.com/blog/captio-discontinued">「Captioが使えない理由」</a> にまとめています。
+    </p>
+
+    <h2>暫定運用：Apple Shortcuts での代替</h2>
+    <p>
+      アプリを入れる前に、まず手元の素材だけでワークフローを止めない方法から。
+      Apple Shortcuts で次のレシピを組めば、「ホーム画面アイコン → 1行入力 → 自分宛メール送信」を再現できます。
+    </p>
+    <pre><code>Shortcut: "Quick Memo to Self"
+1. [Ask for Input] (テキスト, "メモ")
+2. [Send Email]
+   - To: your@email.com
+   - Subject: "memo: " + [Current Date short]
+   - Body: [Provided Input]
+   - Send Without Asking: On (iOS の権限確認は初回のみ)
+3. Add to Home Screen (鍵アイコン→共有→「ホーム画面に追加」)</code></pre>
+    <p>
+      これでも数日〜数週間は回せますが、Outbox（オフライン送信キュー）・送信履歴・端末内暗号化はありません。
+      Shortcuts は前面で UI を立てる必要があり、起動レイテンシも 1〜2 秒は乗ります。
+      本格運用なら <a href="https://simplememofast.com/">Captio式シンプルメモ</a> に移行する方が運用が安定します。
+    </p>
+
+    <h2>機能対応表</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>項目</th>
+          <th>Captio（終了）</th>
+          <th>Apple Shortcuts</th>
+          <th>Captio式シンプルメモ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>起動→入力 UI</td><td>~0.5s</td><td>1〜2s</td><td>0.3s</td></tr>
+        <tr><td>送信レイテンシ</td><td>非公開</td><td>標準メール</td><td>~150ms（受理）</td></tr>
+        <tr><td>オフライン送信キュー</td><td>限定的</td><td>なし</td><td>Outbox 標準搭載</td></tr>
+        <tr><td>送信履歴</td><td>あり</td><td>なし</td><td>あり（端末内）</td></tr>
+        <tr><td>端末内暗号化</td><td>なし</td><td>なし</td><td>AES-GCM (256-bit)</td></tr>
+        <tr><td>本文サーバー保存</td><td>不明</td><td>なし</td><td>恒常保存しない設計</td></tr>
+        <tr><td>iCloud / Gmail / Outlook</td><td>対応</td><td>対応</td><td>対応</td></tr>
+        <tr><td>画像添付</td><td>非対応</td><td>対応</td><td>非対応（テキスト特化）</td></tr>
+        <tr><td>アカウント登録</td><td>不要</td><td>不要</td><td>不要</td></tr>
+        <tr><td>料金</td><td>—</td><td>無料</td><td>Free / ¥500月 / ¥5000年</td></tr>
+      </tbody>
+    </table>
+
+    <h2>移行手順（4 ステップ）</h2>
+    <ol>
+      <li>
+        <strong>App Store からインストール</strong>。
+        <a href="https://apps.apple.com/jp/app/id6758438948">App Store ページ</a> を開いて入手します。
+      </li>
+      <li>
+        <strong>送信先メールアドレスを設定</strong>。
+        Captio で使っていた自分宛アドレスをそのまま入れれば、過去メモと同じ受信箱に届くようになります。
+        メールサービス別の手順は <a href="https://simplememofast.com/guides/">設定ガイド</a> に詳細があります。
+      </li>
+      <li>
+        <strong>署名・件名プレフィックスをカスタマイズ</strong>。
+        受信箱で検索しやすいように <code>memo:</code> や <code>idea:</code> を件名先頭に付けるのがおすすめです。
+      </li>
+      <li>
+        <strong>ホーム画面の Captio アイコンを置き換え</strong>。
+        以前 Captio があった位置に Captio式シンプルメモを置くと、指の動線をリセットせずに済みます。
+      </li>
+    </ol>
+
+    <h2>移行後におすすめの読み物</h2>
+    <ul>
+      <li><a href="https://simplememofast.com/captio/">Captio式とは何か（公式コンセプト解説）</a></li>
+      <li><a href="https://simplememofast.com/note-to-email/">メモ→メールの仕組み</a></li>
+      <li><a href="https://simplememofast.com/methods/">GTD / Inbox Zero / Second Brain との組み合わせ方</a></li>
+      <li><a href="https://simplememofast.com/blog/email-yourself-memo">自分へのメールをもっと速く</a></li>
+      <li><a href="https://simplememofast.com/vs/">他メモアプリとの比較</a></li>
+    </ul>
+
+    <h2>FAQ</h2>
+
+    <h3>Captio で使っていた宛先はそのまま使えますか？</h3>
+    <p>
+      はい。送信先は任意のメールアドレスを指定できます。Captio で使っていた自分宛アドレスをそのまま登録すれば、
+      過去のメモと同じ受信箱に流入させ続けられます。受信箱に蓄積した過去メモを失うこともありません。
+    </p>
+
+    <h3>Captio 時代の検索性は維持できますか？</h3>
+    <p>
+      件名に <code>memo:</code> や <code>idea:</code> などの一貫したプレフィックスを付ければ、
+      Gmail / iCloud のフィルタ・検索で同じように扱えます。フォルダ管理機能をアプリ側に持たないのは設計上の意図で、
+      受信箱の検索を信頼するスタイルです。
+    </p>
+
+    <h3>iCloud Mail でも使えますか？</h3>
+    <p>
+      はい。Gmail / Outlook / iCloud Mail に対応しています。
+      設定の具体手順は <a href="https://simplememofast.com/guides/">公式設定ガイド</a> をご覧ください。
+    </p>
+
+    <h3>無料で試せますか？</h3>
+    <p>
+      初回 7 日間は全機能無制限の無料トライアル、その後は Free プラン（1 日 3 通まで）でそのまま継続利用できます。
+      Premium に切り替えると送信無制限になります（月額 ¥500 / 年額 ¥5,000）。
+      最新の価格・条件は <a href="https://simplememofast.com/faq">公式 FAQ</a> をご確認ください。
+    </p>
+
+    <div class="callout">
+      <div class="callout-title">関連リポジトリ</div>
+      <p>
+        Apple Shortcuts レシピの最新版・追加例は GitHub の
+        <a href="https://github.com/simplememofast/captio-migration-guide">simplememofast/captio-migration-guide</a>
+        にまとめています。プルリクエスト歓迎です。
+      </p>
+    </div>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <div class="links">
+      <a href="https://simplememofast.com/">公式サイト</a>
+      <a href="https://simplememofast.com/captio-alternative/">Captio代替</a>
+      <a href="https://simplememofast.com/about/">運営</a>
+      <a href="https://simplememofast.com/privacy">プライバシー</a>
+      <a href="https://github.com/simplememofast">GitHub</a>
+    </div>
+    <div class="copy">© 2026 株式会社ユリカ (Yurika, K.K.) / Captio式シンプルメモ</div>
+  </div>
+</footer>
+
+</body>
+</html>
